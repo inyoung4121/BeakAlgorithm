@@ -1,67 +1,117 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.PriorityQueue;
-import java.util.StringTokenizer;
-public class Main {
-    //현재 도시 정보 및 비용 관련 클래스
-    static class info implements Comparable<info>{
-        int node, value;
-        public info(int node, int value){
-            this.node = node;
-            this.value = value;
-        }
+import java.util.*;
 
-        //비용 관련 오름차순 정렬
-        @Override
-        public int compareTo(info o) {
-            return this.value - o.value;
+public class Main {
+    private static final int BUF_SIZE = 1 << 13;
+    private static final byte[] buf = new byte[BUF_SIZE];
+    private static int cursor = -1, end;
+    private static byte read() throws IOException {
+        if (++cursor == end) {
+            end = System.in.read(buf, 0, BUF_SIZE);
+            cursor = 0;
         }
+        return buf[cursor];
     }
-    public static void main(String[] args) throws IOException{
-        //입력값 처리하는 BufferedReader
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        //결과값 출력하는 BufferedWriter
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        int N = Integer.parseInt(br.readLine());
-        int M = Integer.parseInt(br.readLine());
-        StringTokenizer st;
-        ArrayList<ArrayList<info>> graph = new ArrayList<>();
-        for(int i=0;i<=N;i++)
-            graph.add(new ArrayList<>());
-        //버스에 대한 정보 그래프 형태로 저장!
-        for(int i=0;i<M;i++){
-            st = new StringTokenizer(br.readLine()," ");
-            int s = Integer.parseInt(st.nextToken());
-            int e = Integer.parseInt(st.nextToken());
-            int value = Integer.parseInt(st.nextToken());
-            graph.get(s).add(new info(e, value));
+    
+    private static int readInt() throws IOException {
+        int res = 0;
+        int in = read();
+        while (in > 32) {
+            res = (res << 3) + (res << 1) + (in & 15);
+            in = read();
         }
-        st = new StringTokenizer(br.readLine()," ");
-        int s = Integer.parseInt(st.nextToken());
-        int e = Integer.parseInt(st.nextToken());
-        int answer = search(s, e, graph, N);	//최단 거리 탐색
-        bw.write(answer + "");	//최단 거리 BuffredWriter 저장
-        bw.flush();		//결과 출력
-        bw.close();
-        br.close();
+        return res;
     }
-    //BFS에서 PriorityQueue를 이용해서 최단거리 탐색 진행하는 함수
-    static int search(int start, int end, ArrayList<ArrayList<info>> graph, int size){
-        PriorityQueue<info> pq = new PriorityQueue<>();
-        boolean[] visited = new boolean[size+1];
-        pq.add(new info(start, 0));	//시작 도시 저장!
-        //최단 거리 탐색
-        while(!pq.isEmpty()){
-            info cur = pq.poll();
-            if(cur.node == end)	//최초 목적 도시 도착!
-                return cur.value;
-            visited[cur.node] = true;	//현재 도시 방문!
-            //버스 경로 탐색!
-            for(info next : graph.get(cur.node)){
-                if(!visited[next.node])	//방문하지 않았던 도시일 때
-                    pq.add(new info(next.node, cur.value + next.value));
+    
+    private static int[] distance;
+    private static int[][] graph;
+    
+    private static int[] vHeap;
+    private static int[] dHeap;
+    private static int size;
+    
+    private static void push(int v, int dist) {
+        int pos = ++size;
+        while (pos > 1) {
+            if (dHeap[pos >> 1] <= dist)
+                break;
+            dHeap[pos] = dHeap[pos >> 1];
+            vHeap[pos] = vHeap[pos >> 1];
+            pos >>= 1;
+        }
+        
+        dHeap[pos] = dist;
+        vHeap[pos] = v;
+        return;
+    }
+    
+    private static void pop() {
+        if (size == 1) {
+            size = 0;
+            return;
+        }
+        
+        int parent = 1;
+        int child = 1;
+        while ((child <<= 1) <= size) {
+            if (child + 1 <= size && dHeap[child] > dHeap[child + 1])
+                ++child;
+            
+            if (dHeap[child] >= dHeap[size])
+                break;
+            
+            dHeap[parent] = dHeap[child];
+            vHeap[parent] = vHeap[child];
+            parent = child;
+        }
+        
+        dHeap[parent] = dHeap[size];
+        vHeap[parent] = vHeap[size--];
+        return;
+    }
+    
+    public static void main(String[] args) throws IOException {
+        final int n = readInt();
+        int m = readInt();
+        
+        graph = new int[n + 1][n + 1];
+        distance = new int[n + 1];
+        vHeap = new int[m + 1];
+        dHeap = new int[m + 1];
+        
+        for (int i = 1; i <= n; i++)
+            distance[i] = 100000000;
+        
+        while (--m != -1) {
+            final int from = readInt();
+            final int to = readInt();
+            final int cost = readInt();
+            if (graph[from][to] == 0 || graph[from][to] > cost + 1)
+                graph[from][to] = cost + 1;
+        }
+        
+        final int start = readInt();
+        final int end = readInt();
+        
+        distance[start] = 0;
+        push(start, 0);
+        
+        while (size != 0) {
+            int current = vHeap[1];
+            int cost = dHeap[1];
+            pop();
+            
+            if (cost > distance[current])
+                continue;
+            
+            for (int i = 1; i <= n; i++) {
+                if (graph[current][i] != 0 && distance[i] >= distance[current] + graph[current][i]) {
+                    distance[i] = distance[current] + graph[current][i] - 1;
+                    push(i, distance[i]);
+                }
             }
         }
-        return -1;		//해당 도시에 도달하지 못할 때
+        
+        System.out.print(distance[end]);
     }
 }
