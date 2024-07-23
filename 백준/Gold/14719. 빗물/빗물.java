@@ -1,37 +1,38 @@
-import java.util.*;
 import java.io.*;
+import java.util.StringTokenizer;
 
+//어떤문제일까??
+//일단 높이를 하나씩 내려가면서 맞춰지는 구간이 있는지 확인해 나간다.
+//-----해당 W에서 좌로 가장 큰값, 우로 가장 큰 값중 작은값 - 해당 크기 만큼 물이 찬다.
 public class Main {
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		
-		int H = Integer.parseInt(st.nextToken()); // 세로
-		int W = Integer.parseInt(st.nextToken()); // 가로
-		
-		st = new StringTokenizer(br.readLine());
+    public static void main(String[] args) throws Exception {
 
-		int[] height = new int[W]; // 인덱스 별 높이 지정
-		for(int i=0; i<W; i++) height[i] = Integer.parseInt(st.nextToken());
-		
-		int rain = 0;
-		
-		for(int i=1; i<W-1; i++) { // 첫 인덱스와 마지막 인덱스엔 빗물이 고일 수 없다.
-		   int leftHeight = 0;
-		   int rightHeight = 0;
-			
-			for(int j=0; j<i; j++) {
-				leftHeight = Math.max(height[j], leftHeight); // 현재 인덱스 기준 왼쪽 최고 높이 찾기
-			}
-			
-			for(int j=(i+1); j<W; j++) {
-				rightHeight = Math.max(height[j], rightHeight); // 현재 인덱스 기준 오른쪽 최고 높이 찾기
-			}
-			
-			// 빗물이 고이기 위해선 현재 인덱스의 높이가 왼쪽 최고 높이와 오른쪽 최고 높이보다 작아야한다.
-			// 빗물은 왼쪽, 오른쪽 중 최소 높이만큼은 찬다.
-			if(height[i] < leftHeight && height[i] < rightHeight) rain += Math.min(leftHeight, rightHeight) - height[i];
-		}
-		System.out.println(rain);
-	}
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        st.nextToken();
+        int w = Integer.parseInt(st.nextToken());
+        int[] arr = new int[w];
+        int result = 0;
+
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < w; i++) {
+            arr[i] = Integer.parseInt(st.nextToken());
+        }
+
+        for (int i = 1; i < w - 1; i++) {
+            int leftMax = 0;
+            int rightMax =0;
+            for (int j = i; j >= 0; j--) {
+                leftMax = Math.max(leftMax, arr[j]);
+            }
+            for (int j = i; j < w; j++) {
+                rightMax = Math.max(rightMax, arr[j]);
+            }
+            if(leftMax > arr[i] && rightMax > arr[i]) {
+                int select = Math.min(leftMax, rightMax);
+                result += select - arr[i];
+            }
+        }
+        System.out.println(result);
+    }
 }
