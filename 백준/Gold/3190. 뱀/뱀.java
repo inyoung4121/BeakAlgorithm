@@ -14,12 +14,12 @@ public class Main {
         n = Integer.parseInt(br.readLine());
         int m = Integer.parseInt(br.readLine());
 
-        Map<String, Boolean> apples = new HashMap<>();
+        Set<String> apples = new HashSet<>();
         for (int i = 0; i < m; i++) {
             st = new StringTokenizer(br.readLine());
             int appleX = Integer.parseInt(st.nextToken());
             int appleY = Integer.parseInt(st.nextToken());
-            apples.put(appleX + "," + appleY, true);
+            apples.add(appleX + "," + appleY);
         }
 
         int movingCount = Integer.parseInt(br.readLine());
@@ -34,11 +34,11 @@ public class Main {
         System.out.println(start(apples, movingPoints));
     }
 
-    static int start(Map<String, Boolean> apples, Queue<int[]> movingPoints) {
+    static int start(Set<String> apples, Queue<int[]> movingPoints) {
         int result = 0;
         int x = 1, y = 1;
         int direction = 0; // 초기 방향: 동쪽
-        Deque<int[]> snake = new LinkedList<>();
+        Queue<int[]> snake = new LinkedList<>();
         snake.add(new int[]{x, y});
         Set<String> snakeSet = new HashSet<>();
         snakeSet.add(x + "," + y);
@@ -46,7 +46,6 @@ public class Main {
         while (true) {
             int nextX = x + dx[direction];
             int nextY = y + dy[direction];
-
             result++;
 
             // 벽에 부딛히거나 몸통에 부딛히면 종료
@@ -54,22 +53,26 @@ public class Main {
                 break;
             }
 
-            snake.addFirst(new int[]{nextX, nextY});
+            // 1초 진행, 1칸 전진
+            snake.add(new int[]{nextX, nextY});
             snakeSet.add(nextX + "," + nextY);
 
-            // 사과를 만나는지 확인한다
-            if (apples.containsKey(nextX + "," + nextY)) {
-                apples.remove(nextX + "," + nextY);
-            } else {
-                int[] tail = snake.removeLast();
-                snakeSet.remove(tail[0] + "," + tail[1]);
-            }
 
             // 방향이 바뀌는지 확인하고 바꿔준다
             if (!movingPoints.isEmpty() && movingPoints.peek()[0] == result) {
                 int[] move = movingPoints.poll();
                 direction = (direction + move[1] + 4) % 4;
             }
+
+            // 사과를 만나는지 확인한다
+            if (apples.contains(nextX + "," + nextY)) {
+                apples.remove(nextX + "," + nextY);
+            } else {
+                int[] tail = snake.poll();
+                assert tail != null;
+                snakeSet.remove(tail[0] + "," + tail[1]);
+            }
+
 
             x = nextX;
             y = nextY;
@@ -81,4 +84,5 @@ public class Main {
     static boolean isInBounds(int x, int y) {
         return x > 0 && x <= n && y > 0 && y <= n;
     }
+
 }
