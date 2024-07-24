@@ -1,33 +1,39 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        int n = Integer.parseInt(st.nextToken());
-        int m = Integer.parseInt(st.nextToken());
-        Queue<Integer> list = new LinkedList<>();
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		
+		int N = Integer.parseInt(st.nextToken());
+		int K = Integer.parseInt(st.nextToken());
+		
+		ArrayList<Integer> list = new ArrayList<>();
+		for (int i = 0; i < N; i++) {
+			list.add(i+1);
+		}
 
-        for( int i = 1; i < n+1; i++ ) {
-            list.offer(i);
-        }
-
-        sb.append("<");
-        for(int i=0; i<n; i++) {
-            for(int j=0; j<m; j++) {
-                if (j == m - 1) {
-                    sb.append(list.poll()).append(", ");
-                } else {
-                    list.offer(list.poll());
-                }
-            }
-        }
-        String str = sb.substring(0, sb.length()-2);
-        System.out.print(str);
-        System.out.print('>');
-    }
+		int n = 1;
+		int idx = (K*n-1) % list.size();
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append('<');
+		while(N-- > 0){
+			
+			sb.append(list.remove(idx)).append(", ");
+			
+			if(list.isEmpty()) break;
+			
+			idx = (idx + K - 1) % list.size();
+			n++;
+		}
+		String str = sb.substring(0, sb.length()-2);
+		System.out.print(str);
+		System.out.print('>');
+		
+	}
 }
-
