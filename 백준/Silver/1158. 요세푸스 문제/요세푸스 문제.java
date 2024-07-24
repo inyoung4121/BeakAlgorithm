@@ -19,14 +19,15 @@ public class Main {
         for(int i=0; i<n; i++) {
             for(int j=0; j<m; j++) {
                 if (j == m - 1) {
-                    sb.append(list.poll());
+                    sb.append(list.poll()).append(", ");
                 } else {
                     list.offer(list.poll());
                 }
             }
-            if(i <n-1) sb.append(", ");
         }
-        sb.append(">");
-        System.out.println(sb);
+        String str = sb.substring(0, sb.length()-2);
+        System.out.print(str);
+        System.out.print('>');
     }
 }
+
