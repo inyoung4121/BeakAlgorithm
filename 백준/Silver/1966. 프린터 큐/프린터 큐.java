@@ -1,8 +1,6 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -11,30 +9,27 @@ public class Main {
         int totalCase = Integer.parseInt(br.readLine());
 
         while (totalCase-- > 0) {
-            Queue<int[]> q = new LinkedList<>();
             StringTokenizer st = new StringTokenizer(br.readLine());
             int n = Integer.parseInt(st.nextToken());
             int m = Integer.parseInt(st.nextToken());
 
+            Queue<int[]> q = new LinkedList<>();
+            PriorityQueue<Integer> priorityQueue = new PriorityQueue<>(Collections.reverseOrder());
+            
             st = new StringTokenizer(br.readLine());
+            for (int i = 0; i < n; i++) {
+                int priority = Integer.parseInt(st.nextToken());
+                q.offer(new int[]{i, priority});
+                priorityQueue.offer(priority);
+            }
 
             int count = 0;
 
-            for (int i = 0; i < n; i++) {
-                q.offer(new int[]{i, Integer.parseInt(st.nextToken())});
-            }
-
             while (!q.isEmpty()) {
                 int[] temp = q.poll();
-                boolean print = true;
-                for (int[] test : q) {
-                    if (temp[1] < test[1]) {
-                        print = false;
-                        break;
-                    }
-                }
-                if (print) {
+                if (temp[1] == priorityQueue.peek()) {
                     count++;
+                    priorityQueue.poll();
                     if (temp[0] == m) {
                         output.append(count).append("\n");
                         break;
