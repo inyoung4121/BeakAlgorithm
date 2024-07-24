@@ -6,36 +6,38 @@ import java.util.StringTokenizer;
 public class Main {
     public static void main(String[] args) throws Exception {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
         int n = Integer.parseInt(bufferedReader.readLine());
         Stack<Integer> stack = new Stack<>();
         while (n-- > 0) {
-            StringTokenizer stringTokenizer = new StringTokenizer(bufferedReader.readLine());
-            String str = stringTokenizer.nextToken();
+            StringTokenizer st = new StringTokenizer(bufferedReader.readLine());
+            String str = st.nextToken();
             switch (str) {
                 case "push":
-                    stack.push(Integer.parseInt(stringTokenizer.nextToken()));
+                    stack.push(Integer.parseInt(st.nextToken()));
                     break;
                 case "pop":
                     if (stack.isEmpty()) {
-                        System.out.println("-1");
+                        sb.append("-1\n");
                     } else {
-                        System.out.println(stack.pop());
+                        sb.append(stack.pop()).append("\n");
                     }
                     break;
                 case "size":
-                    System.out.println(stack.size());
+                    sb.append(stack.size()).append("\n");
                     break;
                 case "empty":
-                    System.out.println(stack.isEmpty() ? "1" : "0");
+                    sb.append(stack.isEmpty() ? "1\n" : "0\n");
                     break;
                 case "top":
                     if (stack.isEmpty()) {
-                        System.out.println("-1");
+                        sb.append("-1\n");
                     } else {
-                        System.out.println(stack.peek());
+                        sb.append(stack.peek()).append("\n");
                     }
                     break;
             }
         }
+        System.out.print(sb);
     }
 }
