@@ -1,35 +1,36 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
+
+//경우의 수
+//모자 2개 안경 1개
+//[모자1,안경] [모자2,안경] 모자1 모자2 안경
+//(2+1(입지않는경우)) x (1+1(입지않는경우)) -1 (아무것도 입지 않는경우)
 public class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int T = sc.nextInt();
-        
-        while (T-- > 0) {
-            int n = sc.nextInt();
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st ;
+        int testCase = Integer.parseInt(br.readLine());
+
+        while (testCase-- > 0) {
+
+            int clothesCount = Integer.parseInt(br.readLine());
             HashMap<String, Integer> clothes = new HashMap<>();
-            
-            for (int i = 0; i < n; i++) {
-                sc.next();  // 의상의 이름은 무시합니다.
-                String type = sc.next();
-                clothes.put(type, clothes.getOrDefault(type, 0) + 1);
+            while (clothesCount-- > 0) {
+                st = new StringTokenizer(br.readLine());
+                st.nextToken();
+                String parts = st.nextToken();
+                clothes.put(parts, clothes.getOrDefault(parts, 1) + 1);
             }
-            
-            // DP 배열 초기화
-            int[] dp = new int[n + 1];
-            dp[0] = 1;  // 아무 것도 안 입는 경우 1가지
-            
-            for (int count : clothes.values()) {
-                for (int j = n; j >= 0; j--) {
-                    dp[j] = dp[j] * (count + 1);
-                }
+            int result =1;
+            for (int clothe : clothes.values()) {
+                result *= clothe;
             }
-            
-            // 최종 결과에서 아무것도 입지 않는 경우 하나를 뺀다
-            System.out.println(dp[0] - 1);
+            System.out.println(--result);
         }
-        
-        sc.close();
     }
 }
