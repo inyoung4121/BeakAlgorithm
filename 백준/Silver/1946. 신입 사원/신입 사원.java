@@ -3,52 +3,54 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-// 대체 이게 무슨 소린지
-// 블로그 봐도 이해가 안됨
-// 어쩃든 서류 합격 순위대로 합격 시키면서 최소 면접 점수를 갱신해나간다
-// 최소면접점수보다 낮으면 탈락
-class people implements Comparable<people> {
-    int first;
-    int second;
+class Applicant implements Comparable<Applicant> {
+    int documentScore;
+    int interviewScore;
 
-    public people(int first, int second) {
-        this.first = first;
-        this.second = second;
+    public Applicant(int documentScore, int interviewScore) {
+        this.documentScore = documentScore;
+        this.interviewScore = interviewScore;
     }
 
     @Override
-    public int compareTo(people o) {
-        return this.first - o.first;
+    public int compareTo(Applicant other) {
+        return Integer.compare(this.documentScore, other.documentScore);
     }
 }
 
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
         int testCases = Integer.parseInt(br.readLine());
 
-        while (testCases-- > 0) {
-            List<people> peopleList = new ArrayList<>();
-            int result = 0;
-            int minValue = Integer.MAX_VALUE;
-            int peopleCount = Integer.parseInt(br.readLine());
-            while (peopleCount-- > 0) {
-                st = new StringTokenizer(br.readLine());
-                peopleList.add(new people(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken())));
-            }
-            Collections.sort(peopleList);
+        for (int t = 0; t < testCases; t++) {
+            int applicantCount = Integer.parseInt(br.readLine());
+            List<Applicant> applicants = new ArrayList<>();
 
-            for (people p : peopleList) {
-                if (minValue > p.second) {
-                    minValue = p.second;
-                    result++;
-                }
+            for (int i = 0; i < applicantCount; i++) {
+                StringTokenizer st = new StringTokenizer(br.readLine());
+                int documentScore = Integer.parseInt(st.nextToken());
+                int interviewScore = Integer.parseInt(st.nextToken());
+                applicants.add(new Applicant(documentScore, interviewScore));
             }
 
-            System.out.println(result);
+            System.out.println(getNumberOfSuccessfulApplicants(applicants));
+        }
+    }
+
+    private static int getNumberOfSuccessfulApplicants(List<Applicant> applicants) {
+        Collections.sort(applicants);
+
+        int minInterviewScore = Integer.MAX_VALUE;
+        int successfulApplicants = 0;
+
+        for (Applicant applicant : applicants) {
+            if (applicant.interviewScore < minInterviewScore) {
+                minInterviewScore = applicant.interviewScore;
+                successfulApplicants++;
+            }
         }
 
+        return successfulApplicants;
     }
 }
-
