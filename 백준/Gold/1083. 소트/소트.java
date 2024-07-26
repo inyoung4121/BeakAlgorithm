@@ -18,20 +18,25 @@ public class Main {
 
         for (int i = 0; i < N; i++) {
 
-            int maxi = 0;
-            int maxi_idx = -1;
+            int maxNum = 0;
+            int maxIdx = -1;
+
             for (int j = i + 1; j < N; j++) {
-                if (list.get(i) < list.get(j) && S >= j - i && list.get(j) > maxi) {
-                    maxi = list.get(j);
-                    maxi_idx = j;
+                if (S >= j - i && list.get(i) < list.get(j) && list.get(j) > maxNum) {
+                    maxNum = list.get(j);
+                    maxIdx = j;
                 }
             }
-            if (maxi_idx != -1) {
-                list.remove(maxi_idx);
-                list.add(i, maxi);
-                S -= maxi_idx - i;
+
+            if (maxIdx != -1) {
+                list.add(i, list.remove(maxIdx));
+                S -= maxIdx - i;
             }
         }
-        System.out.println(list.toString().replaceAll("\\[", "").replaceAll("\\]", "").replace(",", ""));
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < N; i++) {
+            sb.append(list.get(i)).append(" ");
+        }
+        System.out.println(sb);
     }
 }
