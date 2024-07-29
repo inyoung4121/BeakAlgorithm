@@ -1,65 +1,50 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
+
 
 public class Main {
-    static ArrayList<Integer>[] map;
-    static List<Integer> check;
-    static List<Integer> fans;
-    static int n;
-    static boolean tour;
+    static boolean result = true;
 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
 
-        n = sc.nextInt();
-        int m = sc.nextInt();
-        sc.nextLine();
-
-        map = new ArrayList[n];
-        check = new ArrayList<>();
-        fans = new ArrayList<>();
-
-        for (int i = 0; i < n; i++) {
-            map[i] = new ArrayList<>();
+        ArrayList<Integer>[] list = new ArrayList[n + 1];
+        for (int i = 1; i <= n; i++) {
+            list[i] = new ArrayList<>();
         }
-
         for (int i = 0; i < m; i++) {
-            int a = sc.nextInt() - 1;
-            int b = sc.nextInt() - 1;
-            map[a].add(b);
+            st = new StringTokenizer(br.readLine());
+            list[Integer.parseInt(st.nextToken())].add(Integer.parseInt(st.nextToken()));
         }
 
-        int temp = sc.nextInt();
-        for (int i = 0; i < temp; i++) {
-            fans.add(sc.nextInt() - 1);
+        int s = Integer.parseInt(br.readLine());
+        List arr = new ArrayList();
+        st = new StringTokenizer(br.readLine());
+
+        for (int i = 0; i < s; i++) {
+            arr.add(Integer.parseInt(st.nextToken()));
         }
 
-        dfs(0);
+        dfs(arr, list, 1);
 
-        if (tour) {
-            System.out.println("yes");
-        } else {
-            System.out.println("Yes");
-        }
+        System.out.println(result ? "Yes" : "yes");
     }
 
-    private static void dfs(int start) {
-        if (fans.contains(start)) {
+    static void dfs(List arr, ArrayList<Integer>[] list, int start) {
+        if (arr.contains(start)) {
             return;
         }
-        if (map[start].isEmpty()) {
-            tour = true;
-            return;
-        }
-        check.add(start);
 
-        for (int i = 0; i < map[start].size(); i++) {
-            if (!map[map[start].get(i)].isEmpty()) {
-                dfs(map[start].get(i));
-            } else if (map[map[start].get(i)].isEmpty() && !fans.contains(map[start].get(i))) {
-                tour = true;
-            }
+        if (list[start].isEmpty()) {
+            result = false;
+        }
+
+        for (int next : list[start]) {
+            dfs(arr, list, next);
         }
     }
 }
+
