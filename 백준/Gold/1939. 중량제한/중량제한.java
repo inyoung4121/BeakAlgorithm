@@ -1,88 +1,86 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
-
-class Edge {
-    int to;
-    int weight;
-
-    public Edge(int to, int weight) {
-        this.to = to;
-        this.weight = weight;
-    }
-}
-
+ 
 public class Main {
-    static List<Edge>[] graph;
-    static boolean[] visited;
-
+    static int atoi(String str) {
+        return Integer.parseInt(str);
+    }
+    static int N, M;
+    static ArrayList<Node> A = new ArrayList<>();
+    static int start, end, max = Integer.MIN_VALUE;
+    static int [] parent;
     public static void main(String[] args) throws IOException {
+        input();
+        pro();
+    }
+ 
+    static void pro() {
+        Collections.sort(A, (o1, o2)->{
+            return o2.wei - o1.wei;
+        });
+ 
+        for (Node n : A) {
+            union(n.from, n.to);
+            if(find(start) == find(end)){
+                System.out.println(n.wei);
+                return;
+            }
+        }
+    }
+ 
+    static void union(int u, int v) {
+        u = find(u);
+        v = find(v);
+ 
+        if(u == v) return;
+ 
+        if(u > v){
+            parent[u] = v;
+        }
+        else{
+            parent[v] = u;
+        }
+    }
+ 
+    static int find(int v) {
+        if(v == parent[v]) return v;
+ 
+        parent[v] = find(parent[v]);
+        return parent[v];
+    }
+ 
+ 
+    static void input() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        int n = Integer.parseInt(st.nextToken());
-        int m = Integer.parseInt(st.nextToken());
-        
-        graph = new ArrayList[n + 1];
-        for (int i = 1; i <= n; i++) {
-            graph[i] = new ArrayList<>();
-        }
-        
-        int maxWeight = 0;
-        
-        for (int i = 0; i < m; i++) {
+ 
+        N = atoi(st.nextToken());
+        M = atoi(st.nextToken());
+ 
+        parent = new int[N+1];
+        for(int i = 1; i <= N; i++) parent[i] = i;
+ 
+        for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
-            int a = Integer.parseInt(st.nextToken());
-            int b = Integer.parseInt(st.nextToken());
-            int c = Integer.parseInt(st.nextToken());
-            graph[a].add(new Edge(b, c));
-            graph[b].add(new Edge(a, c));
-            maxWeight = Math.max(maxWeight, c);
+            int from = atoi(st.nextToken());
+            int to = atoi(st.nextToken());
+            int wei = atoi(st.nextToken());
+ 
+            A.add(new Node(from, to, wei));
         }
-        
+ 
         st = new StringTokenizer(br.readLine());
-        int start = Integer.parseInt(st.nextToken());
-        int end = Integer.parseInt(st.nextToken());
-
-        // 이분 탐색으로 가능한 최대 weight 찾기
-        int left = 1;
-        int right = maxWeight;
-        int answer = 0;
-
-        while (left <= right) {
-            int mid = (left + right) / 2;
-            if (bfs(start, end, mid)) {
-                answer = mid;
-                left = mid + 1;
-            } else {
-                right = mid - 1;
-            }
-        }
-
-        System.out.println(answer);
+        start = atoi(st.nextToken());
+        end = atoi(st.nextToken());
     }
-
-    public static boolean bfs(int start, int end, int mid) {
-        Queue<Integer> queue = new LinkedList<>();
-        visited = new boolean[graph.length];
-        queue.add(start);
-        visited[start] = true;
-
-        while (!queue.isEmpty()) {
-            int node = queue.poll();
-
-            if (node == end) {
-                return true;
-            }
-
-            for (Edge edge : graph[node]) {
-                if (!visited[edge.to] && edge.weight >= mid) {
-                    visited[edge.to] = true;
-                    queue.add(edge.to);
-                }
-            }
+ 
+    static class Node {
+        int from, to, wei;
+ 
+        public Node(int from, int to, int wei) {
+            this.from = from;
+            this.to = to;
+            this.wei = wei;
         }
-
-        return false;
     }
 }
