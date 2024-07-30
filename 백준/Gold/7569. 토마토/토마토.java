@@ -1,94 +1,72 @@
 import java.io.*;
 import java.util.*;
 
-class Tomato {
-    int x, y, z, day;
-
-    public Tomato(int x, int y, int z, int day) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.day = day;
-    }
-}
-
 public class Main {
-    static int M, N, H;
-    static int[][][] box;
-    static boolean[][][] visited;
-    static int[] dx = {1, -1, 0, 0, 0, 0};
-    static int[] dy = {0, 0, 1, -1, 0, 0};
-    static int[] dz = {0, 0, 0, 0, 1, -1};
-    static Queue<Tomato> queue = new LinkedList<>();
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        
-        M = Integer.parseInt(st.nextToken());
-        N = Integer.parseInt(st.nextToken());
-        H = Integer.parseInt(st.nextToken());
-        
-        box = new int[H][N][M];
-        visited = new boolean[H][N][M];
+        int m = Integer.parseInt(st.nextToken());
+        int n = Integer.parseInt(st.nextToken());
+        int h = Integer.parseInt(st.nextToken());
 
-        for (int h = 0; h < H; h++) {
-            for (int n = 0; n < N; n++) {
+        int[][][] box = new int[h][n][m];
+        boolean[][][] visited = new boolean[h][n][m];
+        Queue<int[]> queue = new LinkedList<>();
+        int totalTomatoes = 0;
+        int ripeTomatoes = 0;
+
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < n; j++) {
                 st = new StringTokenizer(br.readLine());
-                for (int m = 0; m < M; m++) {
-                    box[h][n][m] = Integer.parseInt(st.nextToken());
-                    if (box[h][n][m] == 1) {
-                        queue.offer(new Tomato(m, n, h, 0));
-                        visited[h][n][m] = true;
+                for (int k = 0; k < m; k++) {
+                    box[i][j][k] = Integer.parseInt(st.nextToken());
+                    if (box[i][j][k] == 1) {
+                        queue.add(new int[]{i, j, k, 0});
+                        visited[i][j][k] = true;
+                        ripeTomatoes++;
+                    }
+                    if (box[i][j][k] != -1) {
+                        totalTomatoes++;
                     }
                 }
             }
         }
 
-        int days = bfs();
-
-        if (checkAllRipened()) {
-            System.out.println(days);
-        } else {
-            System.out.println(-1);
+        if (ripeTomatoes == totalTomatoes) {
+            System.out.println(0);
+            return;
         }
-    }
 
-    static int bfs() {
-        int maxDays = 0;
+        int result = 0;
+
+        int[] dx = new int[]{1, -1, 0, 0, 0, 0};
+        int[] dy = new int[]{0, 0, 1, -1, 0, 0};
+        int[] dz = new int[]{0, 0, 0, 0, 1, -1};
 
         while (!queue.isEmpty()) {
-            Tomato tomato = queue.poll();
-            maxDays = tomato.day;
+            int[] cur = queue.poll();
+            result = cur[3];
 
             for (int i = 0; i < 6; i++) {
-                int nx = tomato.x + dx[i];
-                int ny = tomato.y + dy[i];
-                int nz = tomato.z + dz[i];
+                int nx = cur[2] + dx[i];
+                int ny = cur[1] + dy[i];
+                int nz = cur[0] + dz[i];
 
-                if (nx >= 0 && ny >= 0 && nz >= 0 && nx < M && ny < N && nz < H) {
+                if (nx >= 0 && ny >= 0 && nz >= 0 && nx < m && ny < n && nz < h) {
                     if (!visited[nz][ny][nx] && box[nz][ny][nx] == 0) {
                         visited[nz][ny][nx] = true;
                         box[nz][ny][nx] = 1;
-                        queue.offer(new Tomato(nx, ny, nz, tomato.day + 1));
+                        queue.offer(new int[]{nz, ny, nx, cur[3] + 1});
+                        ripeTomatoes++;
                     }
                 }
             }
         }
 
-        return maxDays;
-    }
-
-    static boolean checkAllRipened() {
-        for (int h = 0; h < H; h++) {
-            for (int n = 0; n < N; n++) {
-                for (int m = 0; m < M; m++) {
-                    if (box[h][n][m] == 0) {
-                        return false;
-                    }
-                }
-            }
+        if (ripeTomatoes == totalTomatoes) {
+            System.out.println(result);
+        } else {
+            System.out.println(-1);
         }
-        return true;
     }
 }
