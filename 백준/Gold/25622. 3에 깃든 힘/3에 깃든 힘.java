@@ -8,17 +8,6 @@ public class Main {
     static int[][] ans;
     static int[] ptr;
 
-    static void initialize(int n) {
-        int maxNodes = n + 1;
-        int maxEdges = 2 * n;
-        prv = new int[maxEdges];
-        to = new int[maxEdges];
-        las = new int[maxNodes];
-        sub = new int[maxNodes];
-        ans = new int[n / 3 + 1][3];
-        ptr = new int[n / 3 + 1];
-    }
-
     static void addEdge(int u, int v) {
         sz++;
         to[sz] = v;
@@ -49,16 +38,17 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringBuilder sb = new StringBuilder();
         n = Integer.parseInt(br.readLine());
 
-        if (n % 3 != 0) {
-            bw.write("U\n");
-            bw.flush();
-            return;
-        }
-
-        initialize(n);
+        int maxNodes = n + 1;
+        int maxEdges = 2 * n;
+        prv = new int[maxEdges];
+        to = new int[maxEdges];
+        las = new int[maxNodes];
+        sub = new int[maxNodes];
+        ans = new int[n / 3 + 1][3];
+        ptr = new int[n / 3 + 1];
 
         for (int i = 1; i < n; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
@@ -71,22 +61,20 @@ public class Main {
         dfs(1, -1);
 
         if (cnt != n / 3) {
-            bw.write("U\n");
-            bw.flush();
-            return;
-        }
+            sb.append("U\n");
+        } else {
+            cnt = 0;
+            trace(1, -1, 0);
 
-        cnt = 0;
-        trace(1, -1, 0);
-
-        bw.write("S\n");
-        for (int i = 1; i <= n / 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                bw.write(ans[i][j] + " ");
+            sb.append("S\n");
+            for (int i = 1; i <= n / 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    sb.append(ans[i][j]).append(" ");
+                }
+                sb.append("\n");
             }
-            bw.write("\n");
         }
 
-        bw.flush();
+        System.out.print(sb);
     }
 }
