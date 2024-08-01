@@ -1,51 +1,51 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
 
 public class Main {
-
-	public static void main(String[] args) {
-		
-		Scanner sc = new Scanner(System.in);
-		
-		int N =sc.nextInt();
-		int[] number = new int[N];
-		double sum=0;
-		for(int i =0; i<N; i++) {
-			number[i]=sc.nextInt();
-			sum+=number[i];
-		}
-		Arrays.sort(number);
-		
-		//최빈값
-		int[] arr= new int[8001];
-		for(int i=0; i <N;i++) {
-			if(number[i]<0)arr[number[i]*(-1)+4000]++;
-			else arr[number[i]]++;
-		}
-		int count=0;
-		for(int i=0;i<arr.length; i++) {
-			if(count<arr[i])count=arr[i];
-		}
-		int same=0;
-		ArrayList<Integer> list = new ArrayList<>();
-		for(int i=0;i<arr.length; i++) {
-			if(count==arr[i]) {
-				same++;
-			if(i<4001)list.add(i);
-			else if(i>=4001)list.add((-1)*i+4000);
-		}
-		}
-		Collections.sort(list);
-				
-		System.out.println(Math.round(sum/N));
-		System.out.println(number[N/2]);
-		//최빈값
-		if(same==1)System.out.println(list.get(0));
-		else if(same>1)System.out.println(list.get(1));
-		
-		System.out.println(number[N-1]-number[0]);
-	}
-	
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int n = Integer.parseInt(br.readLine());
+        
+        //산술평균
+        int sum = 0;
+        List<Integer> list = new ArrayList<>();
+        
+        //범위
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        
+        //최빈
+        int[] arr = new int[8001];
+        for (int i = 0; i < n; i++) {
+            int num = Integer.parseInt(br.readLine());
+            sum += num;
+            list.add(num);
+            min = Math.min(min, num);
+            max = Math.max(max, num);
+            arr[num + 4000]++;
+        }
+        
+        Collections.sort(list);
+        
+        //최빈값
+        int count = 0;
+        List<Integer> modeList = new ArrayList<>();
+        for (int i = 0; i < 8001; i++) {
+            if (arr[i] > count) {
+                count = arr[i];
+                modeList.clear();
+                modeList.add(i - 4000);
+            } else if (arr[i] == count) {
+                modeList.add(i - 4000);
+            }
+        }
+        
+        //출력
+        System.out.println(Math.round((double) sum / n));
+        System.out.println(list.get((n - 1) / 2));
+        System.out.println(modeList.size() > 1 ? modeList.get(1) : modeList.get(0));
+        System.out.println(max - min);
+    }
 }
