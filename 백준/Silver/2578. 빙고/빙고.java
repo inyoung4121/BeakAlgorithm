@@ -1,92 +1,47 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class Main {
-
-    static int[][] bingo;
-    static int count; // 빙고 개수 세는 변수
-
     public static void main(String[] args) throws IOException {
-
-        Scanner sc = new Scanner(System.in);
-        bingo = new int[5][5];
-        count = 0;
-
-        // 빙고판 입력
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int[][] arr = new int[5][5];
+        boolean[][] visited = new boolean[5][5];
         for(int i = 0; i < 5; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine());
             for(int j = 0; j < 5; j++) {
-                bingo[i][j] = sc.nextInt();
+                arr[i][j] = Integer.parseInt(st.nextToken());
             }
         }
-
-        for(int k = 1; k <= 25; k++) {
-            int num = sc.nextInt();
-
-            for(int i = 0; i < 5; i++) {
-                for(int j = 0; j < 5; j++) {
-                    if(bingo[i][j] == num) // 사회자가 부른 숫자와 같다면 0으로 바꾸기
-                        bingo[i][j] = 0;
+        int count=0;
+        boolean leftCheck =false;
+        boolean rightCheck =false;
+        for(int i = 0; i < 5; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            for(int j = 0; j < 5; j++) {
+                int num = Integer.parseInt(st.nextToken());
+                for(int k = 0; k < 5; k++) {
+                    for(int l = 0; l < 5; l++) {
+                        if(arr[k][l] == num) {
+                            visited[k][l] = true;
+                            if(visited[k][0]==true&&visited[k][1]==true&&visited[k][2]==true&&visited[k][3]==true&&visited[k][4]==true) {count++;}
+                            if(visited[0][l]==true&&visited[1][l]==true&&visited[2][l]==true&&visited[3][l]==true&&visited[4][l]==true) {count++;}
+                        }
+                    }
+                }
+                if(!leftCheck&&visited[0][0]==true&&visited[1][1]==true&&visited[2][2]==true&&visited[3][3]==true&&visited[4][4]==true){
+                    leftCheck=true;
+                    count++;
+                }
+                if(!rightCheck&&visited[4][0]==true&&visited[3][1]==true&&visited[2][2]==true&&visited[1][3]==true&&visited[0][4]==true){
+                    rightCheck=true;
+                    count++;
+                }
+                if(count>=3){
+                    System.out.println(i*5 + j+1);
+                    return;
                 }
             }
-
-            rCheck();
-            cCheck();
-            lrCheck();
-            rlCheck();
-
-            if(count >= 3) { // 3줄 이상 빙고이면 몇 번째 숫자인지 출력하고 종료
-                System.out.println(k);
-                break;
-            }
-            count = 0;
         }
     }
 
-    //가로 체크
-    public static void rCheck() {
-        for(int i = 0; i < 5; i++) {
-            int zeroCount = 0;
-            for(int j = 0; j < 5; j++) {
-                if(bingo[i][j] == 0)
-                    zeroCount++;
-            }
-            if(zeroCount == 5)
-                count++;
-        }
-    }
-
-    // 세로 체크
-    public static void cCheck() {
-        for(int i = 0; i < 5; i++) {
-            int zeroCount = 0;
-            for(int j = 0; j < 5; j++) {
-                if(bingo[j][i] == 0)
-                    zeroCount++;
-            }
-            if(zeroCount == 5)
-                count++;
-        }
-    }
-
-    // 왼쪽에서 오른쪽으로 그어지는 대각선 체크
-    public static void lrCheck() {
-        int zeroCount = 0;
-        for(int i = 0; i < 5; i++) {
-            if(bingo[i][i] == 0)
-                zeroCount++;
-        }
-        if(zeroCount == 5)
-            count++;
-    }
-
-    // 오른쪽에서 왼쪽으로 그어지는 대각선 체크
-    public static void rlCheck() {
-        int zeroCount = 0;
-        for(int i = 0; i < 5; i++) {
-            if(bingo[i][4-i] == 0)
-                zeroCount++;
-        }
-        if(zeroCount == 5)
-            count++;
-    }
 }
